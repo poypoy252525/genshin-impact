@@ -29,10 +29,25 @@ class RoleType(models.TextChoices):
 
 class Role(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
-    type = models.CharField(max_length=20, choices=RoleType.choices, unique=True)
+    type = models.CharField(
+        max_length=20, choices=RoleType.choices, unique=True)
 
     def __str__(self) -> str:
         return self.get_type_display()
+
+
+class WeaponType(models.TextChoices):
+    SWORD = 'sword', 'Sword'
+    BOW = 'bow', 'Bow'
+    CATALYST = 'catalyst', 'Catalyst'
+    CLAYMORE = 'claymore', 'Claymore'
+    POLEARM = 'polearm', 'Polearm'
+
+
+class Weapon(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    name = models.CharField(max_length=100, unique=True)
+    type = models.CharField(max_length=100, choices=WeaponType.choices)
 
 
 class Character(models.Model):
@@ -42,3 +57,5 @@ class Character(models.Model):
     element = models.CharField(max_length=10, choices=Element.choices)
     model_type = models.CharField(max_length=255)
     roles = models.ManyToManyField(Role, related_name="characters", blank=True)
+    weapon = models.ForeignKey(
+        Weapon, on_delete=models.SET_NULL, related_name='characters', null=True)

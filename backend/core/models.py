@@ -49,13 +49,16 @@ class Weapon(models.Model):
     name = models.CharField(max_length=100, unique=True)
     type = models.CharField(max_length=100, choices=WeaponType.choices)
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Character(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     name = models.CharField(max_length=255)
     quality = models.CharField(max_length=255)
     element = models.CharField(max_length=10, choices=Element.choices)
-    model_type = models.CharField(max_length=255)
+    model_type = models.CharField(max_length=255, null=True, blank=True)
     roles = models.ManyToManyField(Role, related_name="characters", blank=True)
     weapon = models.ForeignKey(
         Weapon, on_delete=models.SET_NULL, related_name='characters', null=True)

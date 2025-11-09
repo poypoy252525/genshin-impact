@@ -62,3 +62,15 @@ class Character(models.Model):
     roles = models.ManyToManyField(Role, related_name="characters", blank=True)
     weapon = models.ForeignKey(
         Weapon, on_delete=models.SET_NULL, related_name='characters', null=True)
+
+    def __str__(self):
+        return f'{self.name} - {self.quality}'
+
+
+class AscensionMaterial(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    type = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f'{self.name} {self.type}'

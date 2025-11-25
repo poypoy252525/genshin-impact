@@ -2,3 +2,5 @@
 staticfiles
 static
 venv
+nginx.config
+__pycache__

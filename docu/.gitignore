@@ -6,7 +6,6 @@
 
 # test & build
 /coverage
-/.next/
 /out/
 /build
 *.tsbuildinfo

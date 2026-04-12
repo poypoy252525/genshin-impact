@@ -1,3 +1,7 @@
-from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import Character
+from .serializers import CharacterSerializer
 
-# Create your views here.
+class CharacterViewSet(ModelViewSet):
+    queryset = Character.objects.all()
+    serializer_class = CharacterSerializer

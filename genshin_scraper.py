@@ -18,6 +18,6 @@ class GenshinScraper:
         for item in items:
             characters.append(
                 {
-                    'image_icon': item.select_one('td > span[typeof="mw:File"] > a > img').attrs["data-src"]
+                    'image_icon': item.select_one('td > span[typeof="mw:File"] > a > img').attrs["data-src"],
                 }
             )

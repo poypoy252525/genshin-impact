@@ -76,14 +76,5 @@ class GenshinScraper:
             print(f"Request failed: {e}")
             return []
 
-scraper = GenshinScraper()
-import time
-start_time = time.time()
-characters = scraper.get_character_list()
-end_time = time.time()
-
-# print(f"Scraped {len(characters)} characters in {end_time - start_time:.2f}s.")
-if characters:
-    print("Example character:", characters[0])
 
 

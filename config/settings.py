@@ -148,3 +148,12 @@ AUTH_USER_MODEL = 'core.User'
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://127.0.0.1:6379/0')
+
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    "sync-genshin-characters": {
+        "task": "genshin.tasks.get_character_list",
+        "schedule": crontab(hour=0, minute=0),  # Run daily at midnight
+    },
+}

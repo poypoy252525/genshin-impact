@@ -35,6 +35,14 @@ services:
     depends_on:
       - redis
 
+  celery-beat:
+    build: .
+    command: celery -A config beat -l info
+    env_file:
+      - ./.env
+    depends_on:
+      - redis
+
   nginx:
     image: nginx:latest
     ports:

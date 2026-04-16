@@ -59,7 +59,7 @@ class Artifact(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     source_id = models.PositiveIntegerField(unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)
-    affix_list = models.ForeignKey(ArtifactAffixList, on_delete=models.CASCADE, null=True, blank=True)
+    affix_list = models.ManyToManyField(ArtifactAffixList, related_name='artifacts', blank=True)
     rarities = models.ManyToManyField(Rarity, related_name='artifacts')
     icon = models.ImageField(upload_to='images/artifacts', null=True, blank=True)
     description = models.TextField(blank=True, null=True)

@@ -21,7 +21,7 @@ class Character(models.Model):
     
 class ArtifactAffixList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
+    name = models.TextField()
     
     def __str__(self):
         return self.name

@@ -27,17 +27,18 @@ class ArtifactAffixList(models.Model):
         return self.name
     
 class ArtifactSuitType(models.TextChoices):
-    EQUIP_BRACER = 'equip_bracer', 'Flower of Life'
-    EQUIP_NECKLACE = 'equip_necklace', 'Plume of Dusk'
-    EQUIP_RING = 'equip_ring', 'Sands of Eon'
-    EQUIP_SHOES = 'equip_shoes', 'Goblet of Eon'
-    EQUIP_DRESS = 'equip_dress', 'Circlet of Logos'
+    EQUIP_BRACER = 'EQUIP_BRACER', 'Flower of Life'
+    EQUIP_NECKLACE = 'EQUIP_NECKLACE', 'Plume of Dusk'
+    EQUIP_RING = 'EQUIP_RING', 'Sands of Eon'
+    EQUIP_SHOES = 'EQUIP_SHOES', 'Goblet of Eon'
+    EQUIP_DRESS = 'EQUIP_DRESS', 'Circlet of Logos'
 
 class ArtifactSuit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
-    type = models.CharField(max_length=20, choices=ArtifactSuitType.choices)
-    max_level = models.PositiveSmallIntegerField()
+    type = models.CharField(max_length=20, choices=ArtifactSuitType.choices, blank=True, null=True)
+    max_level = models.PositiveSmallIntegerField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -63,7 +64,7 @@ class Artifact(models.Model):
     rarities = models.ManyToManyField(Rarity, related_name='artifacts')
     icon = models.ImageField(upload_to='images/artifacts', null=True, blank=True)
     description = models.TextField(blank=True, null=True)
-    suit = models.ForeignKey(ArtifactSuit, on_delete=models.CASCADE, null=True, blank=True)
+    suit = models.ManyToManyField(ArtifactSuit, related_name='artifacts', blank=True)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

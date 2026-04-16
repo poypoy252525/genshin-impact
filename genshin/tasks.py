@@ -1,3 +1,5 @@
+from genshin.models import ArtifactSuitType
+from genshin.models import ArtifactSuit
 from genshin.models import ArtifactAffixList
 from django.core.files.base import ContentFile
 import requests
@@ -80,8 +82,24 @@ def scrape_artifacts(force_update=False):
             for affix_name in artifact_detail.get('affixList', {}).values():
                 affix_obj, _ = ArtifactAffixList.objects.update_or_create(
                     name=affix_name,
+                    defaults={
+                        'name': affix_name,
+                    }
                 )
                 artifact_obj.affix_list.add(affix_obj)
+            
+            # Handle suit pieces
+            for piece_type, piece_data in artifact_detail.get('suit', {}).items():
+                suit_obj, _ = ArtifactSuit.objects.update_or_create(
+                    name=piece_data['name'],
+                    defaults={
+                        'description': piece_data.get('description'),
+                        'type': piece_type,
+                        'max_level': piece_data.get('maxLevel'),
+                    }
+                )
+                artifact_obj.suit.add(suit_obj)
+                
             
             success_count += 1
         except Exception as e:
@@ -89,4 +107,4 @@ def scrape_artifacts(force_update=False):
             logger.error(f"Error processing artifact {artifact_name} ({source_id}): {e}")
         
     logger.info(f"Scraping completed. Total: {total_artifacts}, Success: {success_count}, Errors: {error_count}")
-    return artifacts_data
+    return artifacts_data

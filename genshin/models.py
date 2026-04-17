@@ -8,16 +8,7 @@ class RarityLevel(models.TextChoices):
     FOUR_STAR = '4', '4 Star'
     FIVE_STAR = '5', '5 Star'
 
-class Character(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField(max_length=255)
-    image_icon = models.ImageField(upload_to='images/characters')
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.name
     
 class ArtifactAffixList(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -72,3 +63,17 @@ class Artifact(models.Model):
 
     def __str__(self):
         return self.name
+    
+    
+class Character(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=255)
+    image_icon = models.ImageField(upload_to='images/characters')
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
+    
+    

@@ -24,9 +24,9 @@ class ArtifactSuitAdmin(admin.ModelAdmin):
 @admin.register(Artifact)
 class ArtifactAdmin(admin.ModelAdmin):
     list_display = ('name', 'source_id', 'display_suit', 'created_at')
-    list_filter = ('rarities')
+    list_filter = ('rarities',)
     search_fields = ('name', 'description')
-    filter_horizontal = ('rarities', 'suit')
+    filter_horizontal = ('rarities',)
 
     def display_suit(self, obj):
         return ", ".join([s.name for s in obj.suit.all()])

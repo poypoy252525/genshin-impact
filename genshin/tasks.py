@@ -1,6 +1,4 @@
-from genshin.models import ArtifactSuitType
-from genshin.models import ArtifactSuit
-from genshin.models import ArtifactAffixList
+from genshin.models import ArtifactAffixList, ArtifactSuit
 from django.core.files.base import ContentFile
 import requests
 from genshin_scraper import GenshinScraper

@@ -24,7 +24,7 @@ class ArtifactSuitAdmin(admin.ModelAdmin):
 @admin.register(Artifact)
 class ArtifactAdmin(admin.ModelAdmin):
     list_display = ('name', 'source_id', 'display_suit', 'created_at')
-    list_filter = ('rarities', 'suit')
+    list_filter = ('rarities')
     search_fields = ('name', 'description')
     filter_horizontal = ('rarities', 'suit')
 

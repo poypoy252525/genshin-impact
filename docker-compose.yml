@@ -32,8 +32,12 @@ services:
     command: celery -A config worker -l info
     env_file:
       - ./.env
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
     depends_on:
       - redis
+      - db
 
   celery-beat:
     build: .

@@ -90,14 +90,37 @@ def scrape_artifacts(force_update=False):
             
             # Handle suit pieces
             for piece_type, piece_data in artifact_detail.get('suit', {}).items():
-                suit_obj, _ = ArtifactSuit.objects.update_or_create(
-                    name=piece_data['name'],
+                suit_piece_name = piece_data['name']
+                suit_obj, suit_created = ArtifactSuit.objects.update_or_create(
+                    name=suit_piece_name,
                     defaults={
                         'description': piece_data.get('description'),
                         'type': piece_type,
                         'max_level': piece_data.get('maxLevel'),
                     }
                 )
+                
+                # Download and save the suit piece icon
+                suit_icon_name = piece_data.get('icon')
+                is_legacy_suit_icon = suit_obj.icon and not str(suit_obj.icon.name).startswith('images/artifacts/suits/')
+                
+                if force_update or suit_created or not suit_obj.icon or is_legacy_suit_icon:
+                    if suit_icon_name:
+                        suit_image_url = f"https://gi.yatta.moe/assets/UI/reliquary/{suit_icon_name}.png"
+                        try:
+                            logger.info(f"Downloading image for suit piece {suit_piece_name}: {suit_image_url}")
+                            img_response = requests.get(suit_image_url, timeout=30)
+                            img_response.raise_for_status()
+                            
+                            suit_obj.icon.save(
+                                f"{suit_icon_name}.png",
+                                ContentFile(img_response.content),
+                                save=True
+                            )
+                            logger.info(f"Successfully saved image for suit piece: {suit_piece_name}")
+                        except Exception as e:
+                            logger.warning(f"Failed to download image for suit piece {suit_piece_name}: {e}")
+
                 artifact_obj.suit.add(suit_obj)
                 
             

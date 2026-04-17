@@ -37,6 +37,7 @@ class ArtifactSuit(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=20, choices=ArtifactSuitType.choices, blank=True, null=True)
+    icon = models.ImageField(upload_to='images/artifacts/suits', blank=True, null=True)
     max_level = models.PositiveSmallIntegerField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     

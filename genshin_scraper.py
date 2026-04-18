@@ -15,3 +15,29 @@ class GenshinScraper:
         artifacts = response.json()
         
         return artifacts
+    
+    def get_material_list(self):
+        response = requests.get(f'{self.base_url}/material')
+        response.raise_for_status()
+        
+        materials = response.json()
+        
+        return materials
+    
+    def get_material(self, material_id: int):
+        response = requests.get(f'{self.base_url}/material/{material_id}')
+        response.raise_for_status()
+        
+        material = response.json()
+        
+        return material
+    
+    def get_image(self, image_name: str):
+        image_url = f"https://gi.yatta.moe/assets/UI/reliquary/{image_name}.png"
+        response = requests.get(image_url)
+        response.raise_for_status()
+        
+        
+        image = response.content
+        
+        return image

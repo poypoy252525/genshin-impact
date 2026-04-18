@@ -1,3 +1,5 @@
+from genshin.models import MaterialSource
+from genshin.models import Material
 from genshin.models import ArtifactAffixList, ArtifactSuit
 from django.core.files.base import ContentFile
 import requests
@@ -37,7 +39,7 @@ def scrape_artifacts(force_update=False):
             artifact_detail = response.json()['data']
             
             artifact_obj, created = Artifact.objects.update_or_create(
-                source_id=artifact_detail['id'],
+                external_id=artifact_detail['id'],
                 defaults={
                     'name': artifact_detail['name'],
                 }
@@ -104,15 +106,13 @@ def scrape_artifacts(force_update=False):
                 
                 if force_update or suit_created or not suit_obj.icon or is_legacy_suit_icon:
                     if suit_icon_name:
-                        suit_image_url = f"https://gi.yatta.moe/assets/UI/reliquary/{suit_icon_name}.png"
                         try:
-                            logger.info(f"Downloading image for suit piece {suit_piece_name}: {suit_image_url}")
-                            img_response = requests.get(suit_image_url, timeout=30)
-                            img_response.raise_for_status()
+                            logger.info(f"Downloading image for suit piece {suit_piece_name}")
+                            image = scraper.get_image(suit_icon_name)
                             
                             suit_obj.icon.save(
                                 f"{suit_icon_name}.png",
-                                ContentFile(img_response.content),
+                                ContentFile(image),
                                 save=True
                             )
                             logger.info(f"Successfully saved image for suit piece: {suit_piece_name}")
@@ -121,7 +121,6 @@ def scrape_artifacts(force_update=False):
 
                 artifact_obj.suit.add(suit_obj)
                 
-            
             success_count += 1
         except Exception as e:
             error_count += 1
@@ -129,3 +128,59 @@ def scrape_artifacts(force_update=False):
         
     logger.info(f"Scraping completed. Total: {total_artifacts}, Success: {success_count}, Errors: {error_count}")
     return artifacts_data
+
+
+@shared_task
+def scrape_materials(force_update: bool = False):
+    logger.info("Scraping Materials...")
+    
+    scraper = GenshinScraper()
+    
+    try:
+        materials = scraper.get_material_list()
+    except Exception as e:
+        logger.error(f"Failed to retrieve material list: {e}")
+        return {}
+    
+    materials_data = materials['data']['items']
+    total_materials = len(materials_data)
+    logger.info(f"Retrieved {total_materials} materials from scraper.")
+    
+    processed_count = 0
+    success_count = 0
+    error_count = 0
+    
+    for source_id, material_info in materials_data.items():
+        processed_count += 1
+        material_name = material_info.get('name', 'Unknown')
+        logger.info(f"[{processed_count}/{total_materials}] Processing material: {material_name} (ID: {source_id})")
+        
+        try:
+            material_detail = scraper.get_material(source_id)
+            material_obj, created = Material.objects.update_or_create(
+                external_id=source_id,
+                defaults={
+                    'name': material_detail['name'],
+                    'source': material_detail['source'],
+                    'description': material_detail['description'],
+                    'rarities': material_detail['rarities'],
+                }
+            )
+            
+            if created:
+                logger.info(f"Created new material record for: {material_name}")
+            else:
+                logger.debug(f"Updated existing material record for: {material_name}")
+            
+            for source in material_detail['source']:
+                MaterialSource.objects.get_or_create(
+                    
+                )
+        
+        except Exception as e:
+            error_count += 1
+            logger.error(f"Error processing material {material_name} ({source_id}): {e}")
+    
+    logger.info(f"Scraping completed. Total: {total_materials}, Success: {success_count}, Errors: {error_count}")
+    return materials_data
+        

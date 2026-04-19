@@ -89,9 +89,9 @@ class Material(models.Model):
 
 class MaterialSource(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='sources')
-    name = models.CharField()
-    type = models.CharField()
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='sources', null=True, blank=True)
+    name = models.CharField(max_length=255)
+    type = models.CharField(max_length=255)
     days = ArrayField(models.CharField(max_length=10), default=list, blank=True, null=True)
     
     def __str__(self):

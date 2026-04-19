@@ -1,3 +1,6 @@
+from genshin.serializers import MaterialDetailSerializer
+from genshin.serializers import MaterialSerializer
+from genshin.models import Material
 from rest_framework.viewsets import ModelViewSet
 from .models import Character, Artifact
 from .serializers import CharacterSerializer, ArtifactSerializer, ArtifactDetailSerializer
@@ -14,3 +17,13 @@ class ArtifactViewSet(ModelViewSet):
         if self.action == 'list':
             return ArtifactSerializer
         return ArtifactDetailSerializer
+    
+    
+class MaterialViewSet(ModelViewSet):
+    queryset = Material.objects.all()
+    serializer_class = MaterialSerializer
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return MaterialSerializer
+        return MaterialDetailSerializer

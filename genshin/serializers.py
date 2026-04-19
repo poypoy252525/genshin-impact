@@ -1,3 +1,5 @@
+from genshin.models import MaterialSource
+from genshin.models import Material
 from rest_framework import serializers
 from .models import Character, Artifact, Rarity, ArtifactSuit, ArtifactAffixList
 
@@ -44,4 +46,26 @@ class ArtifactDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artifact
         fields = ['id', 'name', 'rarities', 'icon', 'suit', 'affix_list']
+        read_only_fields = ['id']
+        
+        
+class MaterialSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Material
+        fields = ['id', 'name', 'type', 'icon', 'description']
+        read_only_fields = ['id']
+        
+
+class MaterialSourceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MaterialSource
+        fields = ['name', 'type', 'days']
+        
+
+class MaterialDetailSerializer(serializers.ModelSerializer):
+    sources = MaterialSourceSerializer(many=True)
+    rarities = RaritySerializer(many=True)
+    class Meta:
+        model = Material
+        fields = ['id', 'name', 'type', 'icon', 'description', 'rarities', 'sources']
         read_only_fields = ['id']

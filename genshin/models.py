@@ -54,7 +54,7 @@ class Artifact(models.Model):
     external_id = models.PositiveIntegerField(unique=True, blank=True, null=True)
     name = models.CharField(max_length=255)
     affix_list = models.ManyToManyField(ArtifactAffixList, related_name='artifacts', blank=True)
-    rarities = models.ManyToManyField(Rarity, related_name='artifacts')
+    rarities = ArrayField(models.CharField(max_length=1, choices=RarityLevel.choices), default=list, blank=True, null=True)
     icon = models.ImageField(upload_to='images/artifacts', null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     suit = models.ManyToManyField(ArtifactSuit, related_name='artifacts', blank=True)
@@ -84,7 +84,7 @@ class Material(models.Model):
     type = models.CharField(max_length=255, null=True, blank=True)
     icon = models.ImageField(upload_to='images/materials', null=True, blank=True)
     description = models.TextField(blank=True, null=True)
-    rarities = models.ManyToManyField(Rarity, related_name='materials')
+    rarity = models.CharField(max_length=1, choices=RarityLevel.choices, blank=True, null=True)
 
 
 class MaterialSource(models.Model):

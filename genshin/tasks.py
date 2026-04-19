@@ -71,12 +71,9 @@ def scrape_artifacts(force_update=False):
                     except Exception as e:
                         logger.warning(f"Failed to download image for {artifact_name}: {e}")
             
-            # Handle rarities
-            for rarity_val in artifact_detail.get('levelList', []):
-                rarity_obj, _ = Rarity.objects.get_or_create(
-                    level=f'{rarity_val}',
-                )
-                artifact_obj.rarities.add(rarity_obj)
+            # Handle rarities (ArrayField of strings, e.g. ["4", "5"])
+            artifact_obj.rarities = [str(r) for r in artifact_detail.get('levelList', [])]
+            artifact_obj.save()
             
             # Handle affix list
             for affix_name in artifact_detail.get('affixList', {}).values():
@@ -168,15 +165,16 @@ def scrape_materials(force_update: bool = False):
                 defaults={
                     'name': material_detail.get('name', material_name),
                     'description': material_detail.get('description'),
+                    'rarity': str(material_detail.get('rank')),
+                    'type': material_detail.get('type'),
                 }
             )
             
-            # Handle rarities
-            for rarity_val in (material_detail.get('rarities') or []):
-                rarity_obj, _ = Rarity.objects.get_or_create(
-                    level=f'{rarity_val}',
-                )
-                material_obj.rarities.add(rarity_obj)
+            # Handle rarity (Singular CharField from scraper 'rank')
+            rank = material_detail.get('rank')
+            if rank:
+                material_obj.rarity = str(rank)
+                material_obj.save()
             
             if created:
                 logger.info(f"Created new material record for: {material_name}")

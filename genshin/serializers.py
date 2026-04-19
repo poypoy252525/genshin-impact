@@ -24,8 +24,6 @@ class ArtifactSuitSerializer(serializers.ModelSerializer):
 
 
 class ArtifactSerializer(serializers.ModelSerializer):
-    rarities = RaritySerializer(many=True)
-    
     class Meta:
         model = Artifact
         fields = ['id', 'name', 'rarities', 'icon']
@@ -41,7 +39,6 @@ class ArtifactAffixListSerializer(serializers.ModelSerializer):
 class ArtifactDetailSerializer(serializers.ModelSerializer):
     suit = ArtifactSuitSerializer(many=True)
     affix_list = ArtifactAffixListSerializer(many=True)
-    rarities = RaritySerializer(many=True)
     
     class Meta:
         model = Artifact
@@ -64,8 +61,7 @@ class MaterialSourceSerializer(serializers.ModelSerializer):
 
 class MaterialDetailSerializer(serializers.ModelSerializer):
     sources = MaterialSourceSerializer(many=True)
-    rarities = RaritySerializer(many=True)
     class Meta:
         model = Material
-        fields = ['id', 'name', 'type', 'icon', 'description', 'rarities', 'sources']
+        fields = ['id', 'name', 'type', 'icon', 'description', 'rarity', 'sources']
         read_only_fields = ['id']

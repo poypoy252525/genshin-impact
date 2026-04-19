@@ -172,7 +172,7 @@ def scrape_materials(force_update: bool = False):
             )
             
             # Handle rarities
-            for rarity_val in material_detail.get('rarities', []):
+            for rarity_val in (material_detail.get('rarities') or []):
                 rarity_obj, _ = Rarity.objects.get_or_create(
                     level=f'{rarity_val}',
                 )
@@ -183,7 +183,7 @@ def scrape_materials(force_update: bool = False):
             else:
                 logger.debug(f"Updated existing material record for: {material_name}")
             
-            for source in material_detail.get('source', []):
+            for source in (material_detail.get('source') or []):
                 MaterialSource.objects.get_or_create(
                     name=source.get('name', 'Unknown Source'),
                     defaults={

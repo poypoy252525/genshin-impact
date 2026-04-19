@@ -32,6 +32,16 @@ class GenshinScraper:
         
         return material
     
+
+    def get_weapon_list(self):
+        response = requests.get(f'{self.base_url}/weapon')
+        response.raise_for_status()
+        
+        weapons = response.json()
+        
+        return weapons
+    
+    
     def get_image(self, image_name: str):
         image_url = f"https://gi.yatta.moe/assets/UI/{image_name}.png"
         response = requests.get(image_url)

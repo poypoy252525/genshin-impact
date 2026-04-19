@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Character, Rarity, ArtifactAffixList, ArtifactSuit, Artifact
+from .models import Character, Rarity, ArtifactAffixList, ArtifactSuit, Artifact, Material, MaterialSource
 
 @admin.register(Character)
 class CharacterAdmin(admin.ModelAdmin):
@@ -31,3 +31,19 @@ class ArtifactAdmin(admin.ModelAdmin):
     def display_suit(self, obj):
         return ", ".join([s.name for s in obj.suit.all()])
     display_suit.short_description = 'Suit'
+
+class MaterialSourceInline(admin.TabularInline):
+    model = MaterialSource
+    extra = 0
+
+@admin.register(Material)
+class MaterialAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'external_id')
+    search_fields = ('name',)
+    inlines = [MaterialSourceInline]
+    filter_horizontal = ('rarities',)
+
+@admin.register(MaterialSource)
+class MaterialSourceAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'material')
+    search_fields = ('name',)

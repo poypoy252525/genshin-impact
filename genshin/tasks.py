@@ -215,4 +215,7 @@ def scrape_materials(force_update: bool = False):
     
     logger.info(f"Scraping completed. Total: {total_materials}, Success: {success_count}, Errors: {error_count}")
     return materials_data
-        
+
+
+def scrape_weapons(force_update: bool = False):
+    pass

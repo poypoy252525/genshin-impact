@@ -98,3 +98,27 @@ class MaterialSource(models.Model):
         return self.name        
 
 
+class WeaponAffix(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField()
+    refinement = ArrayField(models.TextField(), default=list, blank=True, null=True)
+    
+    def __str__(self):
+        return self.name
+
+
+class Weapon(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    external_id = models.PositiveIntegerField(unique=True, blank=True, null=True)
+    name = models.CharField(max_length=255)
+    rarity = models.CharField(max_length=1, choices=RarityLevel.choices, blank=True, null=True)
+    icon = models.ImageField(upload_to='images/weapons', null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+    type = models.CharField(max_length=255, null=True, blank=True)
+    affix_list = models.ManyToManyField(WeaponAffix, related_name='weapons', blank=True)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name

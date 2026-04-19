@@ -7,7 +7,7 @@ django.setup()
 import argparse
 import logging
 import time
-from genshin.tasks import scrape_artifacts
+from genshin.tasks import scrape_artifacts, scrape_materials
 
 # Configure logging
 logging.basicConfig(
@@ -30,9 +30,11 @@ try:
         logger.info("Triggering scrape_artifacts task in background...")
         # Since scrape_artifacts is decorated with @shared_task, we use .delay()
         scrape_artifacts.delay(force_update=args.force)
+        scrape_materials.delay(force_update=args.force)
         logger.info("Task triggered. Check Celery logs or worker output for progress.")
     else:
         result = scrape_artifacts(force_update=args.force)
+        result = scrape_materials(force_update=args.force)
         elapsed_time = time.time() - start_time
         logger.info(f"Script finished successfully in {elapsed_time:.2f} seconds.")
 except KeyboardInterrupt:

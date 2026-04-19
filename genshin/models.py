@@ -77,25 +77,24 @@ class Character(models.Model):
     def __str__(self):
         return self.name
     
-
-class MaterialSource(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    name = models.CharField()
-    type = models.CharField()
-    days = ArrayField(models.CharField(max_length=10), default=list, blank=True, null=True)
-    
-    def __str__(self):
-        return self.name    
-
-    
 class Material(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     external_id = models.PositiveIntegerField(unique=True, blank=True, null=True)
-    source = models.ForeignKey(MaterialSource, on_delete=models.CASCADE, related_name='materials')
     name = models.CharField(max_length=255)
     type = models.CharField(max_length=255, null=True, blank=True)
     icon = models.ImageField(upload_to='images/materials', null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     rarities = models.ManyToManyField(Rarity, related_name='materials')
 
+
+class MaterialSource(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    material = models.ForeignKey(Material, on_delete=models.CASCADE, related_name='sources')
+    name = models.CharField()
+    type = models.CharField()
+    days = ArrayField(models.CharField(max_length=10), default=list, blank=True, null=True)
     
+    def __str__(self):
+        return self.name        
+
+

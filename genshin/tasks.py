@@ -108,7 +108,7 @@ def scrape_artifacts(force_update=False):
                     if suit_icon_name:
                         try:
                             logger.info(f"Downloading image for suit piece {suit_piece_name}")
-                            image = scraper.get_image(suit_icon_name)
+                            image = scraper.get_image(f"reliquary/{suit_icon_name}")
                             
                             suit_obj.icon.save(
                                 f"{suit_icon_name}.png",
@@ -156,26 +156,60 @@ def scrape_materials(force_update: bool = False):
         logger.info(f"[{processed_count}/{total_materials}] Processing material: {material_name} (ID: {source_id})")
         
         try:
-            material_detail = scraper.get_material(source_id)
+            material_response = scraper.get_material(source_id)
+            material_detail = material_response.get('data', {})
+            
+            if not material_detail:
+                logger.warning(f"No detail data found for material: {material_name}")
+                continue
+
             material_obj, created = Material.objects.update_or_create(
-                external_id=source_id,
+                external_id=int(source_id),
                 defaults={
-                    'name': material_detail['name'],
-                    'source': material_detail['source'],
-                    'description': material_detail['description'],
-                    'rarities': material_detail['rarities'],
+                    'name': material_detail.get('name', material_name),
+                    'description': material_detail.get('description'),
                 }
             )
+            
+            # Handle rarities
+            for rarity_val in material_detail.get('rarities', []):
+                rarity_obj, _ = Rarity.objects.get_or_create(
+                    level=f'{rarity_val}',
+                )
+                material_obj.rarities.add(rarity_obj)
             
             if created:
                 logger.info(f"Created new material record for: {material_name}")
             else:
                 logger.debug(f"Updated existing material record for: {material_name}")
             
-            for source in material_detail['source']:
+            for source in material_detail.get('source', []):
                 MaterialSource.objects.get_or_create(
-                    
+                    name=source.get('name', 'Unknown Source'),
+                    defaults={
+                        'type': source.get('type'),
+                        'days': source.get('days', []),
+                        'material': material_obj
+                    }
                 )
+                
+            icon_name = material_info['icon']
+            
+            is_legacy_string = material_obj.icon and not str(material_obj.icon.name).startswith('images/materials/')
+            
+            if force_update or created or not material_obj.icon or is_legacy_string:
+                if icon_name:
+                    try:
+                        image = scraper.get_image(icon_name)
+                        
+                        material_obj.icon.save(
+                            f"{icon_name}.png",
+                            ContentFile(image),
+                            save=True
+                        )
+                        logger.info(f"Successfully saved image for: {material_name}")
+                    except Exception as e:
+                        logger.warning(f"Failed to download image for {material_name}: {e}")
         
         except Exception as e:
             error_count += 1

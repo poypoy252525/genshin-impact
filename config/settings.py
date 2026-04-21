@@ -148,15 +148,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'core.User'
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_CACHE_BACKEND = 'django-cache'
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'django-db')
+CELERY_CACHE_BACKEND = os.getenv('CELERY_CACHE_BACKEND', 'django-cache')
 CELERY_RESULT_EXTENDED = True
 
-from celery.schedules import crontab
+# from celery.schedules import crontab
 
-CELERY_BEAT_SCHEDULE = {
-    "sync-genshin-characters": {
-        "task": "genshin.tasks.get_character_list",
-        "schedule": crontab(hour=0, minute=0),  # Run daily at midnight
-    },
-}
+# CELERY_BEAT_SCHEDULE = {
+#     "sync-genshin-characters": {
+#         "task": "genshin.tasks.get_character_list",
+#         "schedule": crontab(hour=0, minute=0),  # Run daily at midnight
+#     },
+# }
